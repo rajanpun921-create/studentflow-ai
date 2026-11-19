@@ -42,15 +42,35 @@ st.sidebar.title("🎓 StudentFlow AI")
 
 st.sidebar.markdown(
     """
+    <style>
+        .university-link {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6366F1 !important;
+            letter-spacing: 1px;
+            text-decoration: none !important;
+            transition: color 0.2s ease;
+        }
+
+        .university-link:hover {
+            color: #3730A3 !important;
+            text-decoration: underline !important;
+        }
+    </style>
+
     <p style="
-        font-size: 11px;
-        font-weight: 600;
-        color: #6366F1;
-        letter-spacing: 1px;
         margin-top: -15px;
         margin-bottom: 5px;
     ">
-        SEOUL CHRISTIAN UNIVERSITY
+        <a
+            class="university-link"
+            href="https://www.scu.ac.kr"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Visit Seoul Christian University"
+        >
+            SEOUL CHRISTIAN UNIVERSITY ↗
+        </a>
     </p>
     """,
     unsafe_allow_html=True

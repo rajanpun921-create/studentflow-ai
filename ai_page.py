@@ -1,10 +1,19 @@
 
 import streamlit as st
 from agent import ask_agent
-import os
+from ai_engine import get_config
+
+from chat_storage import (
+    initialize_chat_storage,
+    save_message,
+    get_chat_history,
+    clear_chat_history
+)
 
 
 def show_ai_page():
+
+    initialize_chat_storage()
 
     st.title("🤖 AI Study Assistant")
 
@@ -19,19 +28,45 @@ def show_ai_page():
 
     st.caption(
         "Your question and saved student records "
-        "are sent to Gemini for analysis. "
-        "Use sample data during testing."
+        "are sent to Gemini for analysis."
     )
 
-    # Initialize chat history
-    if "ai_messages" not in st.session_state:
+    st.warning(
+        "Demo mode: Chat history is shared between "
+        "visitors. Do not enter private information."
+    )
 
-        st.session_state.ai_messages = []
+    # Load saved chat history
+    messages = get_chat_history()
 
-    # Clear conversation
-    if st.button("🗑️ Clear Chat"):
+    # Chat statistics
+    col1, col2 = st.columns(2)
 
-        st.session_state.ai_messages = []
+    with col1:
+        st.metric(
+            "Saved Messages",
+            len(messages)
+        )
+
+    with col2:
+        st.metric(
+            "Questions Asked",
+            sum(
+                m["role"] == "user"
+                for m in messages
+            )
+        )
+
+    # Clear conversation with confirmation
+    confirm_clear = st.checkbox(
+        "Confirm deletion of all chat history"
+    )
+
+    if st.button(
+        "🗑️ Clear Chat",
+        disabled=not confirm_clear
+    ):
+        clear_chat_history()
         st.rerun()
 
     st.divider()
@@ -81,8 +116,8 @@ def show_ai_page():
 
     st.divider()
 
-    # Display conversation history
-    for message in st.session_state.ai_messages:
+    # Display database chat history
+    for message in messages:
 
         with st.chat_message(message["role"]):
 
@@ -95,15 +130,10 @@ def show_ai_page():
 
     question = typed_question or selected_question
 
-    # Process student question
     if question:
 
-        st.session_state.ai_messages.append(
-            {
-                "role": "user",
-                "content": question
-            }
-        )
+        # Save student question
+        save_message("user", question)
 
         with st.chat_message("user"):
 
@@ -119,36 +149,37 @@ def show_ai_page():
 
                     answer = ask_agent(question)
 
-                st.markdown(answer)
+                # Save AI response permanently
+                # in the current SQLite database
+                save_message("assistant", answer)
 
-                st.session_state.ai_messages.append(
-                    {
-                        "role": "assistant",
-                        "content": answer
-                    }
+            except Exception as e:
+
+                print(
+                    f"AI Assistant Error: {type(e).__name__}",
+                    flush=True
                 )
-
-            except Exception:
 
                 error_message = (
                     "The AI assistant is temporarily "
                     "unavailable. Please try again."
                 )
 
-                st.error(error_message)
-
-                st.session_state.ai_messages.append(
-                    {
-                        "role": "assistant",
-                        "content": error_message
-                    }
+                save_message(
+                    "assistant",
+                    error_message
                 )
+
+        st.rerun()
 
     st.divider()
 
     st.caption(
-        "Powered by Gemini AI | "
-        "Model: " + os.getenv("GEMINI_MODEL", "Gemini")
+        "Powered by Gemini AI | Model: "
+        + get_config(
+            "GEMINI_MODEL",
+            "gemini-3.5-flash-lite"
+        )
     )
 
     st.caption(

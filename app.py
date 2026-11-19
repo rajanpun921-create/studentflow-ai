@@ -13,7 +13,6 @@ from dashboard_page import show_dashboard
 
 # 1. Application settings
 
-
 st.set_page_config(
     page_title="StudentFlow AI",
     page_icon="🎓",
@@ -39,14 +38,27 @@ days = [
 
 # 3. Sidebar navigation
 
-
 st.sidebar.title("🎓 StudentFlow AI")
+
+st.sidebar.markdown(
+    """
+    <p style="
+        font-size: 11px;
+        font-weight: 600;
+        color: #6366F1;
+        letter-spacing: 1px;
+        margin-top: -15px;
+        margin-bottom: 5px;
+    ">
+        SEOUL CHRISTIAN UNIVERSITY
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 
 st.sidebar.caption(
     "Plan smarter. Study better."
 )
-
-
 
 page = st.sidebar.radio(
     "Navigation",
@@ -60,7 +72,6 @@ page = st.sidebar.radio(
     ]
 )
 
-
 st.sidebar.divider()
 st.sidebar.caption("AI Student Schedule and Task Assistant")
 st.sidebar.caption("Version 6.0")
@@ -71,6 +82,7 @@ st.sidebar.success("Database connected")
 if page == "Dashboard":
 
     show_dashboard()
+
 # 5. Task Manager
 
 elif page == "My Tasks":
@@ -253,16 +265,23 @@ elif page == "Weekly Timetable":
                     db.delete_class(class_id)
                     st.rerun()
 
-# 7. Footer
+# 7. AI Study Assistant
 
 elif page == "AI Study Assistant":
 
     show_ai_page()
+
+# 8. Intelligent Planner
+
 elif page == "Intelligent Planner":
 
     show_planner_page()
+
+# 9. Saved Study Plans
+
 elif page == "Saved Study Plans":
 
     show_saved_plans_page()
     st.sidebar.divider()
+
 st.sidebar.caption("Built for university students.")

@@ -76,9 +76,22 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-st.sidebar.caption(
-    "Plan smarter. Study better."
+st.sidebar.markdown(
+    """
+    <p style="
+        font-size: 12px;
+        color: #64748B;
+        font-weight: 500;
+        margin-top: 5px;
+        margin-bottom: 8px;
+    ">
+        Prepared by Rajan, Nisha, Samiksha, James and Kush
+    </p>
+    """,
+    unsafe_allow_html=True
 )
+
+st.sidebar.caption("Plan smarter. Study better.")
 
 page = st.sidebar.radio(
     "Navigation",
